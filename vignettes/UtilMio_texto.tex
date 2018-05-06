@@ -1,0 +1,555 @@
+\documentclass{article}
+\usepackage{natbib}
+\usepackage{graphics}
+\usepackage{amsmath}
+\usepackage{indentfirst}
+\usepackage[utf8]{inputenc}
+
+
+% \VignetteIndexEntry{UtilMio_texto}
+
+
+
+\usepackage{Sweave}
+\begin{document}
+\input{UtilMio_texto-concordance}
+
+\title{Utilidades para Análisis de Marcos Input-Output }
+\author{Francisco Parra}
+\maketitle
+
+
+\vspace{1.5cm}
+
+{\bf Introducción}
+
+La libreria contiene diversas funciones para regionalizar, modelizar y actualizar marcos imput-output.
+
+Para la regionalización de una TIO a partir de otra de ambito superior emplean utilizando una mínima información se emplean los cocientes de localización (LQ) . Entre ellos destaca el método FLQ (Flegg Location Quantion) o a su versión modificada AFLQ.
+
+Para evaluar la similaridad entre tablas, hay varios metodos: WAPE, SAPE, MASE, KPSI, Is.
+
+Una vez obtenidas dichas estimaciones, las mismas son susceptibles de posteriores ajustes con arreglo a la información disponible (real o incluso pronosticada). Las técnicas tradicionales, como el RAS básico, no son efectivas ya que para su aplicación, ya que necesitan conocer los márgenes de la matriz de consumos intermedios, de ahí que será preciso acudir a técnicas más complejas. En este sentido, se puede acudir a procedimientos de carácter global, tal como procede Eurostat. Este instituto emplea una técnica, conocida como el eurométodo (EU), diseñada por Beutel (2002), para elaborar el marco input-output (tabla simétrica y tablas supply-use) homogéneamente para los distintos estados que forman parte de la Unión Europea (Eurostat, 2008).
+
+
+
+{\bf Regionalización por coeficientes de localización}
+
+La regionalización de una TIO a partir del LQ surge  de la hipótesis adoptada por Jensen et al. (1979), en la que se admite que los coeficientes técnicos regionales ($a^R_{ij}$) derivan de los nacionales ($a^N_{ij}$) a partir de un efecto multiplicativo surgido de un factor de participación dentro del comercio regional $LQ_{ij}$:
+
+$a^R_{ij}=a^N_{ij}LQ_{ij}$, $i,j=1,2,...n$.
+
+Los subíndices i y j hacen referencia a los sectores suministradores y compradores,respectivamente.
+
+Según Jensen et al. (1979), a los coeficientes técnicos regionales se les impone una restricción primordial dada por el siguiente criterio:
+
+$a^R_{ij}=a^N_{ij}LQ_{ij}$, si $LQ_{ij} \leq 1$
+
+$a^R_{ij}=a^N_{ij}$, si $LQ_{ij} > 1$
+
+Lo cual significa que si la región es autosuficiente, el LQ es mayor que la unidad, entonces el coeficiente regional es exactamente el coeficiente asociado a la matriz de consumos intermedios nacional. En cambio, si la región es importadora neta, lo que indica que el LQ sea menor que la unidad, el coeficiente regional será inferior al nacional.
+
+Los Los coeficientes de localización simple (SLQ) verifican la aportación de la industria de una región con la contribución de la misma industria al total (de la nación). Su expresión genérica es la siguiente:
+
+$SLQ_i=\frac{\frac{x^R_i}{x^R}}{\frac{x^N_i}{x^N}}$
+
+en donde, $x^R_i$ es la producción del sector i en la región R, $x^R$ es la producción (total) de la región R, $x^N_i$ es la producción del sector i en el total del país y, por último, $x^N$ es la producción (total) del país.
+
+
+En la práctica la obtención de estos coeficientes es muy sencilla.Según Flegg et al. (1997) y Fuentes (2002), dichos coeficientes son algo imprecisos dado que, generalmente, los resultados sobreestiman la producción regional de algunas industrias. Por este motivo, otras fórmulas como la FLQ o la AFLQ corrigen estos problemas y, en consecuencia, optimizan el proceso de generación de TIOs regionales.
+
+Los coeficientes de localización interindustrial (CILQ) cuantifican, para una determinada región, la importancia relativa de la industria suministradora i respecto a la industria compradora j, para mayor detalle véase Schaffer y Chu (1969). Su término genérico se escribe del siguiente modo:
+
+$CILQ_{ij}=\frac{SLQ-i}{SLQ_j}$
+
+
+El $CILQ_{ij}$  basa en una hipótesis engañosa que está implícita, si $i = j$ implica que todos los sectores pueden satisfacer toda la demanda de su propio sector a nivel local, indistintamente del tamaño del sector. Morrison y Smith (1974) modificaron el CILQ correspondiente a los elementos de la diagonal principal de la siguiente forma:
+
+$MOSLQ_{ij}=CILQ_{ij}SLQ_i$ si (i=j)
+
+
+
+Otra propuesta es la sugerida por Round (1978), simbolizada normalmente mediante la abreviatura RLQ. Su expresión es del siguiente modo:
+
+$RLQ_{ij}=\frac{SLQ_i}{log_2(1+SLQ_j)}$
+
+
+Flegg y Webber (1995), para superar los problemas que caracterizaban a los procedimientos anteriores, especialmente la sobrestimación de la autosuficiencia de los distintos sectores productivos, propusieron el coeficiente $FLQ_{ij}$, cuyos principales elementos de este procedimiento son, por un lado, los $CILQ_{ij}$ y, por otro, el rol atribuido al tamaño de la economía regional:
+
+$FLQ_{ij}=CILQ_{ij}[log_2(1-\frac{x^R}{x^N})]^{\delta}$
+
+
+
+
+Los coeficientes técnicos regionales se calcularían entonces:
+
+$a^R_{ij}=a^N_{ij}FLQ_{ij}$, si $CILQ_{ij} \leq 1$
+
+$a^R_{ij}=a^N_{ij}$, si $CILQ_{ij} > 1$
+
+La función RegioFLQ opera sobre dos vectores de la misma dimension en los que están los valores añadidos de la región (a) y la nación (b), el coeficiente delta (c) y la matriz $n*n$ de los coeficientes tecnicos nacionales. Devuelve una matriz $n*n$.
+
+
+Posteriormente, Flegg y Webber (2000) responden con una reformulación, incorporando una corrección en relación a la especialización de las ramas compradoras:
+
+$AFLQ_{ij}=FLQ_{ij} log_2(1-SLQ_j)$ si $SLQ_j>1$
+
+$AFLQ_{ij}=FLQ_{ij}$ si $SLQ_j\leq 1$
+
+La función RegioAFLQ opera sobre dos vectores de la misma dimension en los que están los valores añadidos de la región (a) y la nación (b), el coeficiente delta (c) y la matriz $n*n$ de los coeficientes tecnicos nacionales. Devuelve una matriz $n*n$.
+
+
+{\bf Técnicas de Evaluación de Resultados}
+
+
+Cada método de actualización produce una proyección potencialmente diferente. Por tanto, es preciso evaluar su capacidad de predicción. Para ello es necesario disponer de estadísticos que nos permitan determinar si la proyección realizada se aproxima en mayor o menor medida al objetivo previsto.
+
+Los estadísticos más habituales se basan en comparar la distancia entre los datos proyectados ($\hat u$) y los valores reales ($u$), utilizando  diferentes medidas de distancia. Las medidas más básicas e intuitivas para medir la similitud de la bondad de ajuste de una matriz estimada frente a una teórica son (Valderas, 2015):
+
+- media de los porcentajes de error en valor absoluto:
+
+$$WAPE=\frac {\sum_i^m \sum_j^n \mid \hat u_{ij} - u_{ij}  \mid}{\sum_i^m \sum_j^n u_{ij} } \times 100$$
+
+
+
+- media simétrica de los porcentajes de error en valor absoluto:
+
+$$SWAPE=200 \times \frac {\sum_i^m \sum_j^n u_{ij} \frac {\mid \hat u_{ij} - u_{ij} \mid}{\mid \hat u_{ij} + u_{ij} \mid}}{\sum_i^m \sum_j^n u_{ij} }$$
+
+
+cuyo p - likelihood se obtiene como:
+
+$$p - likelihood=100 \times (1-\frac {SWAPE}{200})$$
+
+- media de los errores absolutos escalados:
+
+$$MASE=m \times n  \frac {\sum_i^m \sum_j^n \mid \hat u_{ij} - u_{ij}  \mid}{\sum_i^m \sum_j^n \mid  u_{ij} - \bar u \mid } $$
+
+
+- Psi de Kullback modificado:
+
+$$ \psi (U,\hat U)= \sum_i^m \sum_j^n u_{ij} ln \frac {\mid u_{ij} \mid} {\frac {\mid u_{ij} \mid + \mid \hat u_{ij} \mid}{2}} + \sum_i^m \sum_j^n \hat u_{ij} ln \frac {\mid \hat u_{ij} \mid} {\frac {\mid u_{ij} \mid + \mid \hat u_{ij} \mid}{2}} $$
+
+cuyo p - likelihood se obtiene como:
+
+$$ p-psi=100 \times \frac {\psi (U,\hat U)}{ln 2 \times \sum_i^m \sum_j^n \mid u_{ij} \mid + \mid \hat u_{ij}\mid}$$
+
+
+
+
+- Indice de similaridad:
+
+$$ IS=100- 50(1-r_{U,\hat U})$$
+
+donde $$r_{U,\hat U}=\frac{cov(U,\hat U)}{S_U S_{\hat U}}$$
+
+
+
+ {\bf Metodos de Proyeccion de Marcos Input-Output: El Método Euro}
+
+El Manual de EUROSTAT (2008a) dedica un capítulo completo a estos métodos diferenciando tres grupos:
+
+- Métodos Univariantes, son aquellos que obtienen la matriz proyectada a partir de una corrección de la matriz de referencia, bien por filas, o bien por columnas, de acuerdo con una matriz diagonal de factores de corrección.
+
+- Métodos Biproporcionales, a diferencia de los anteriores, la matriz proyectada es obtenida a través de una modificación tanto por filas como por columnas de la matriz de referencia.
+
+- Métodos Estocásticos, son aquellos que toman en consideración a multitud de variables que ejercen su influencia sobre los elementos de la matriz de referencia para obtener la matriz proyectada.
+
+
+{\bf Métodos basados en técnicas biproporcionales}
+
+{\bf El Método RAS}
+
+El método RAS es el método más fructífero y que mayor número de aplicaciones ha tenido en el campo de las proyecciones de tablas Input-Output. El método originalmente fue desarrollado para la proyección de la matriz de coeficientes técnicos, aunque posteriormente su uso fue generalizado para matrices de transacciones como las que representan los elementos de la tabla de Origen y la tabla de Destino (Valderas, 2015).
+
+El método RAS es una técnica de ajuste automático de una matriz por filas y columnas habitualmente utilizado como método de actualización temporal de matrices Input-Output. La técnica RAS se basa en un proceso de cálculo que puede considerarse en grandes líneas como la resolución de un problema estadístico de ajuste de una matriz desfasada temporalmente para que concuerde con los nuevos datos de la contabilidad nacional o regional, normalmente disponibles con periodicidad anual.
+
+El método RAS básico fue desarrollado en el Departamento de Economía Aplicada de la Universidad de Cambridge (Reino Unido), por el premio Nobel Richard Stone en los primeros años de la década de los sesenta. Se trata de la aproximación más robusta desde una perspectiva teórica (Bacharach, 1970), pero presenta la limitación de que hay que conocer los marginales de la matriz que se quiere estimar.
+
+
+Este método establece un procedimiento de cálculo por el cual una matriz de coeficientes va a ser corregida sucesivamente por factores correctores de fila ($R$) y de columna ($S$). Matemáticamente, el método vendría expresado a través de la operación matricial que le da el nombre:
+
+$A_1=RxA_0xS$
+
+Donde,
+
+$A_0$ es la Matriz original.
+
+$A_1$ es la  Matriz estimada.
+
+$R$ y $S$ son matrices diagonales, que premultiplicando y post multiplicando, respectivamente, a la matriz de partida ($A_0$) proporcionan la convergencia de las filas y columnas agregadas de la matriz estimada ($A_1$).
+
+Es un método iterativo en donde los factores de corrección se obtienen en la primera iteración dividiendo los marginales de la matriz estimada por los de la matriz original, y en las sucesivas dividiendo los marginales de la matriz estimada por los que la matriz obtenida en cada iteración, hasta alcanzar un determinado grado de convergencia o diferencia decimal entre unos y otros marginales.
+
+Las aplicaciones del método RAS aplicado a las proyecciones de tablas Input-Output han sido innumerables desde los primeros trabajos realizados con el mismo por Stone y Brown. Para un mayor detalle de los orígenes de este método, sus primeras aplicaciones al campo Input-Output:  Bacharach (1970), Lecomber (1975), Polenske (1997) y Miller y Blair (2009).
+
+El principal inconveniente del método RAS original, es que requiere que los totales por filas y por columnas sean conocidos a priori, situación que en la práctica no se da, en especial los totales por filas que corresponden al output por productos, por lo que estos deberían ser estimados por algún otro procedimiento previamente para poder aplicar el método RAS. Temurshoev y Timmer (2011) han desarrollado una versión del RAS para trabajar con un marco Input-Output integrado que supera este problema permitiendo la estimación endógena de los elementos desconocidos de las marginales de la tabla a proyectar. En Valderas (2015) se exponen las diferentes extensiones del metodo original RAS que han tratado de dar respuesta a los incovenientes que presenta el modelo.
+
+
+Además de la familia de métodos RAS y sus extensiones , existen otro tipo de métodos biproporcionales que también se han empleado como técnicas de proyección de elementos de un marco Input-Outpu, entre los que destaca el método EURO, desarrollado originalmente por Beutel (2002) para la actualización de tablas Input-Output simétricas y, posteriormente adaptado por el propio Beutel (2008) para su empleo en la actualización de tablas de Origen y Destino.
+
+La idea básica del método EURO (Beutel, 2002) es aprovechar las predicciones macroeconómicas oficiales que se estiman en el ámbito de las Contabilidades Nacionales o Regionales, y que se publican con periodicidad anual para, a partir de una tabla Input-Output de referencia, derivar una nueva tabla Input-Output proyectada para aquellos años en los que disponemos de dichas predicciones macroeconómicas y que, esta proyección sea a su vez consistente con las citadas predicciones macroeconómicas oficiales.
+
+La versión del método EURO que aparece en Eurostat (2008) tiene como obtetivo la proyección de tablas Input-Output simétricas, y al igual que el RAS es un procedimiento iterativo. Pero a diferencia de aquel en el que sólo se actualiza la matriz de coeficientes técnicos, en el método EURO intervienen todos los elementos de la tabla simétrica:
+
+- Consumos intermedios diferenciando el origen entre consumos interiores e importados
+
+- Valor añadido y sus componentes
+
+- Producción interior
+
+- Demanda final diferenciada por usos y por origen de los empleos
+
+El punto de inicio del procedimiento de iteración es una tabla Input-Output, que consta de seis cuadrantes para producción nacional, las importaciones y el valor añadido. El procedimiento de iteración comienza con la suposición que, en la primera iteración, las tasas de crecimiento propuestas para el valor añadido son el punto de partida de las tasas de crecimiento desconocidas que caracterizan los diferentes niveles de producción, consumos intermedios, y demandas finales sectoriales.
+
+\begin{table}[htbp]
+ \begin{center}
+ \begin{tabular}{|l|l|l|l|}
+ \hline
+  & Ramas homogeneas  &  Componentes de la demanda final & Total  \\
+ \hline \hline
+ Productos interiores & Cuadrante I & Cuadrante II  & Producción interior\\ \hline
+ Productos importados & Cuadrante III & Cuadrante IV  & Importaciones \\ \hline
+ VAB y sus componentes & Cuadrante V & Cuadrante VI  & Valor añadido \\ \hline
+ Total & Producción interior & Demanda final &   \\ \hline
+ \end{tabular}
+ \caption{Esquema de la tabla Input-Output para la proyección en el método EURO.}
+ \label{tabla:sencilla}
+ \end{center}
+ \end{table}
+
+Fuente: ( Valderas, 2015)
+
+
+Estas tasas de crecimiento de partida cambiarán ligeramente hasta que se alcancen los crecimientos de las variables exógenas proyectadas. El procedimiento iterativo se inicia proyectando los inputs empleados de bienes interiores e importados a partir de las tasas de los valores añadidos, y los output intermedios  obtenidos con las tasas de crecimiento de los valores añadidos de cada sector, en tanto que los finales se proyectan con sus respectivas tasas de crecimiento. Se obtiene una medida ponderada para cada elemento de los tres cuadrantes que una vez agregada en terminos Input-Output, ofrece una solución que no asegura el equilibrio contable de un marco Input-Output, por lo que se requiere de otra secuencia en donde partiendo de la tecnología derivada de la nueva situación se restaure el equilibrio Input-Output y se obtenga una tabla equilibrada.
+
+**Paso 1.** Actualización de los inputs finales e intermedios.
+
+Todas las transacciones de los cuadrantes I a IV son ponderadas con la media aritmética correspondiente a las tasa de crecimiento de los outputs (z) y de los inputs (s).
+
+(1) $T2 = Z*T1$
+
+(2) $T3 = T1*S$
+
+(3) $T4 = (T2 + T3)/2$ Media aritmética
+
+(4) $T4 = \sqrt {(T1* T2)}$ Media geométrica
+
+donde,
+
+$T1$ = matriz de consumos intermedios y demanda final de bienes y servicios (r x p)
+
+$T2$ = matriz de transacciones obtenida a partir de  las tasas de crecimiento de los outputs (r x p)
+
+$T3$ = matriz de transacciones obtenida a partir de  las tasas de crecimiento de los inputs  (r x p)
+
+$T4$ = matriz de transacciones para los cuadrantes I al IV (r x p)
+
+$Z$ = matriz diagonal de los crecimientos de los inputs, obtenida a partir de los crecimientos de los valores añadidos  tanto para producciones interiores como para los bienes importados (r x r)
+
+$S$ = matriz diagonal de tasas de crecimiento de la producción (output) obtenida a partir de los crecimientos de los valores añadidos, del consumo final y las exportaciones por bienes (p x p)
+
+$r$ = numero de productos interiores e importados
+
+$p$ = numero de actividades  (producción y demanda  final)
+
+**Paso 2.** Actualización de los valores añadidos por sector.
+
+El valor añadido de cada sector se actualiza multiplicando el valor añadido del año base por la matriz diagonal de los crecimientos de los inputs. $(w_i)$.
+
+(5) $T5 = v * w_i$
+
+donde,
+
+$T5$ = vector fila de los valores añadidos obtenidos con las tasas de crecimiento de los inputs (1 x p)
+
+$v$ = vector de valores añadidos por sectores (1 x p)
+
+**Paso 3.** Composición de la tabla Input-Output Matriz A.
+
+Una primera aproximación a la tabla Input-Output actualizada se obtiene con los resultados de los pasos uno y dos, pero sin que se garantice el equilibrio Input-Output.
+
+**Paso 4.** Cálculo de los coeficientes Input-Output.
+
+En el paso 4, se asume la tecnología contenida la estructura de producciones interindustriales de la tabla A, calculándose las producciones interiores, las importaciones y valores añadidos derivados de los coeficientes técnicos de la tabla A.
+
+(6) $a_{ij} = \frac {x_{ij}}{x-{j}}$
+
+(7) $b_{ij} = \frac {m_{ij}}{x_{j}}$
+
+(8) $c_{j} = \frac {v_{j}}{x_{j}}$
+
+donde,
+
+$a_{ij}$ = coeficientes técnicos de los inputs interiores
+
+$b_{ij}$ = coeficientes técnicos de los inputs importados
+
+$c_{j}$ = Tasas de los valores añadidos
+
+$x_{ij}$= consumos intermedios de los bienes y servicios interiores
+
+$m_{ij}$ = consumos intermedios de los bienes y servicios importados
+
+$v_{j}$ = valores añadidos
+
+$x_{j}$ = producción interior
+
+**Paso 5.** Elaboración del modelo Input-Output.
+Utilizando los coeficientes del paso 4, se calcula la inversa de Leontief, que al ser multiplicada por el vector de la demanda final da como solución el vector de producción de la tabla A.
+
+(9) $x = (I-A)^{-1}y$
+
+donde,
+
+$X$ = vector del output (producción interior)
+
+$A$ = matriz de coeficientes aij
+
+$I$ = matriz identidad
+
+$(I-A)^{-1}$ = matriz inversa de Leontief
+
+$y$ = vector columna de las demandas finales de la tabla A
+
+**Paso 6.** Determinar las necesidades de inputs interiores e importados.
+
+Los inputs primarios e intermedios son calculados  balanceando la tabla Input-Output, según los siguientes pasos.
+
+(10) $Z = B(I-A)^{-1}y$
+
+donde,
+
+$B$ = matriz de coeficientes intermedios interiores, importados y valores añadidos
+
+$Z$ = matriz de necesidades de input
+
+**Paso 7.** Composición de la tabla Input-Output.
+
+Se compone una nueva tabla consistente, tabla B, en donde los valores añadidos y demandas finales no corresponden con los valores de partida.  Estos se obtendrán a través de iteraciones sucesivas.
+
+**Paso 8.** Iteración.
+
+Las tasas de crecimiento del output $(w_o)$ e input $(w_i)$ son modificadas durante el proceso de iteración hasta obtener los valores de partida, los derivados del cuadro macroeconómico inicial. De tal forma que resulte una tabla B cuyos valores añadidos, importaciones y demandas finales permitan rescatar las tasas de crecimiento iniciales. El proceso se detiene en la iteración k que garantiza un nivel $\alpha$ de margen de error entre las tasas de crecimiento obtenidas por el modelo y las del cuadro macroeconómico $(dev(i)<\alpha)$.
+
+La desviación entre variables macroeconómicas a  proyectar (las de partida) y las que se obtienen en el modelo es:
+
+(11) $dev = \frac {pro}{mod}$
+
+donde,
+
+$dev$ = desviacion
+
+$pro$ = variables macroeconómicas exogenas a proyectar
+
+$mod$ = proyecciones Input-Output (resultados del modelo)
+
+Las desviaciones observadas se utilizan para corregir las tasas de crecimiento $z$ y $s$ en un procedimiento aditivo. En cuyo caso el multiplicador y la función de ajuste tipo A se definen como:
+
+
+si $dev > 0$
+
+(12) $mult = dev - I$
+
+(13) $Z = Z + mult$
+
+(14) $S = S + mult$
+
+
+si $dev < 0$
+
+(15) $mult = I - dev$
+
+(16) $Z = Z - mult$
+
+(17) $S = Z - mult$
+
+donde,
+
+$mult$ = matriz diagonal de multiplicadores de ajuste para las tasas de crecimiento
+
+$dev$ = matriz diagonal de factores de desviación
+
+$I$ = matriz identidad
+
+$Z$ = matriz diagonal de las tasas de crecimiento de la producción interior e importada
+
+$S$ = matriz diagonal de  las tasas de crecimiento de la producción interior y demandas finales
+
+La funcion de ajuste A es eficiente para encontrar una solución sin demasiadas iteraciones pero las fluctuaciones cíclicas pueden originar un sistema inestable. Por ello una función convexa tipo B es la recomendada para ajustar las tasas de crecimiento durante el proceso de iteración. Si el modelo subestima (o sobreestima) la variable macroeconómica a proyectar, las correspondientes tasas de crecimiento $w_o$ y $w_i$ , son incrementadas (decrementadas) respectivamente, de acuerdo a una función de ajuste convexa.
+
+En este otro tipo de ajuste la function es definida como:
+
+si $dev > 0$
+
+(18) $mult = 1 + \frac {[(dev-1)100]^c}{100}$ para $dev > 0$
+
+(19) $w_o = w_o*mult$
+
+(20) $w_i = w_i*mult$
+
+si $dev < 0$
+
+(21) $mult = 1 - \frac {[(1-dev)100]^c}{100}$ para $dev < 0$
+
+(22) $w_o = w_o*mult$
+
+(23) $w_i = w_i*mult$
+
+siendo $c$ = elasticidad del ajuste
+
+El Método EURO fue adoptado por EUROSTAT y con él se ha llevado a cabo la proyección de las tablas Input-Output de la mayoría de los países miembros, para aquellos años intermedios en los que los países no calculan las mismas. Todos los contrastes llevados a cabo por EUROSTAT apuntan a la utilidad del método para proyectar tablas Input-Output elaboradas siguiendo la metodología SEC, especialmente en aquellas situaciones en las que deba elaborarse una tabla Input-Output con unos requisitos de información bastante reducidos.
+
+La función mteuro tiene como parámetros
+
+T1.- Tabla base de destino interior e importaciones
+
+act.- Indices de valores a proyectar
+
+nd .- Número de sectores de demanda final
+
+f.- Factor para corregir las desviaciones típicas
+
+m.- número de iteraciones
+
+
+{\bf Cálculo de impactos sobre la producción y empleo con matriz orlada}
+
+La Tabla Input-Output  simétrica se estructura en tres matrices independientes: la matriz de consumos intermedios, la matriz de demanda final y la matriz de inputs intermedios. La matriz de consumos intermedios contabiliza las relaciones de intercambio entre las distintas ramas productivas. La matriz de demanda final recoge la parte de la producción de bienes y servicios que se destina a los usuarios finales (demanda de consumo, demanda de inversión y demanda exterior de bienes producidos en la economía nacional). Y finalmente, la matriz de inputs primarios en donde se registran los pagos que realizan las empresas y las administraciones por utilizar los factores originarios de la producción (rentas del trabajo y excedentes empresariales). La matriz de inputs primarios proporciona el Valor Añadido de cada rama que se obtiene deduciendo del valor de la producción el total de consumos intermedios.  Cada elemento $x_{ij}$ de la matriz de consumos intermedios recoge los consumos de productos de la rama i que hace la rama j. Si estos consumos son originarios de empresas residentes en el área territorial de referencia de la tabla input-output, es decir, tienen el carácter de interior, se referencian con el superíndice r, los importados desde unidades no residentes se referencian con el superíndice m. La producción que realiza una rama  ($X_j$) se obtiene como suma de los elementos que figuran en cada columna: consumos intermedios de unidades residentes, importaciones y valor añadido (V). Por filas, aparecen los destinos de la producción interior ($X_i$) y de las importaciones ($M_i$). Estos destinos son la demanda intermedia (las compras que realizan otros sectores) y la demanda final ($D_i$).
+
+Dado el equilibrio contable de una TIO, en donde el valor de producción por columnas ha de igualarse con la producción distribuida o empleada en cada fila, se puede también representar la estructura formal de la TIO a través del siguiente sistema de ecuaciones lineales:
+
+$$x^r_{11}+x^r_{12}+...+x^r_{1n}+D^r_1=X_1$$
+$$x^r_{21}+x^r_{22}+...+x^r_{2n}+D^r_2=X_2$$
+$$...$$
+$$x^r_{n1}+x^r_{n2}+...+x^r_{nn}+D^r_n=X_n$$
+
+Definimos el coeficiente técnico $a_{ij}$  como la relación entre la cantidad consumida de un input y el valor de producción de una rama:  $\frac{x_{ij}}{X_j}$
+
+obteniendo un nuevo sistema de ecuaciones:
+
+$$a^r_{11}X_1+a^r_{12}X_2+...+a^r_{1n}X_n+D^r_1=X_1$$
+$$a^r_{21}X_1+a^r_{22}X_2+...+a^r_{2n}X_n+D^r_2=X_2$$
+$$...$$
+$$a^r_{n1}X_1+a^r_{n2}X_2+...+a^r_{nn}X_n+D^r_n=X_n$$
+Este nuevo sistema de ecuaciones en notación matricial, queda expresado por:
+
+$$A^rX+D^r=X$$
+
+Operando convenientemente se transforma en:
+
+$$D^r=(1-A^r)X$$
+
+En donde, I es la matriz Identidad y
+
+$$X=(1-A^r)^{-1}D^r$$
+
+A la matriz $(1-A^r)^{-1}D$ se la conoce como la matriz inversa de Leontief, cuyos elementos $A^r_{ij}$ constituyen una medida del esfuerzo de producción requerido a la rama i por parte de la rama j para abastecer una unidad de demanda final de esta última. Cada elemento de la matriz inversa de Leontief representa pues los efectos acumulativos (directos e indirectos) que subyacen en la estructura productiva que la TIO representa.
+
+Consideremos, asimismo, un segundo nivel de endogenización de las variables en el contexto de las tablas Input-Output formado por el vector de Demanda Final (compuesto por las variables Consumo Privado, Consumo Público, Formación Bruta de Capital y Exportaciones). Si suponemos que el consumo realizado de los bienes y servicios producidos por un sector es una proporción constante del VAB total tenemos que:
+
+$$C_i = k_i l’X$$
+
+donde $k_i$  es una constante que indica la proporción del VAB que se dedica al consumo de bienes y servicios producidos por el sector i-ésimo e l’ es un vector cuyo elemento i-ésimo indica para cada sector la proporción que representa el VAB sobre la producción total $X_i$, de manera que el producto $l’X$ es el VAB agregado de la economia.
+
+Es decir, si:
+
+$k_i=\frac{C_i}{VAB}$, $l=(l_1,l_2,...,l_n)$,$l_i=\frac{VAB_i}{X_i}$
+
+Por tanto, en notación matricial, quedaría:
+
+$C = kl’X = KX$
+
+A partir de la expresión anterior, el sistema de ecuaciones descrito ($A^rX+D^r=X$) se puede reformular ahora como:
+
+$$A^rX+KX+D^*= X$$
+
+siendo D* ahora el vector suma del Consumo Público, la Formación Bruta de Capital y las Exportaciones.
+
+Operando en el modelo quedaría entonces:
+
+$$X = (I-A-K)^{-1}D^*=(I-A^*)^{-1}D^*$$
+
+pudiendo obtenerse las producciones sectoriales en función de la nueva variable exógena.
+
+A partir del instrumental desarrollado pueden realizarse las predicciones con el modelo Input-Output, las cuales nos permitirán valorar los impactos o efectos sectoriales que tiene un aumento de la Demanda Final de un complejo industrial en el conjunto de la economía. Dichos efectos o impactos macroeconómicos se pueden dividir en tres tipos:
+
+Un efecto directo provocado por el aumento de la demanda final del complejo el cual provoca un aumento de la producción del mismo con objeto de cubrir el aumento de demanda.
+
+Unos efectos indirectos en el resto de sectores que suministran inputs a las ramas que forman el complejo, las cuales, ante el aumento de demanda, realizarán mayores pedidos a sus proveedores para poder aumentar su producción.
+
+Unos efectos inducidos producidos a causa del aumento de demanda de inputs que realizan las ramas afectadas por los efectos indirectos, lo cual se transmite al conjunto de sectores de la economía.
+
+Finalmente, los efectos señalados anteriormente producen a su vez un incremento de las rentas salariales lo que, dado el supuesto de consumo como variable dependiente de la renta, provoca un aumento del consumo lo que da como resultado nuevos aumentos de demanda final. Es lo que denominamos efecto renta.
+
+Los elementos de la última fila de la nueva matriz, $A^*$, indican la renta doméstica directamente generada al obtener una unidad del sector j. La última columna de la nueva matriz representa las necesidades directas de producto i para la obtención de una unidad final de consumo privado.
+
+$$B^*=(I-A^*)^{-1}$$
+
+Los multiplicadores se calculan utilizando la última fila de la nueva matriz inversa de Leontief, B*. En forma de matriz particionada podemos expresar la nueva matriz de transacciones intersectoriales como:
+
+$$\begin{bmatrix}{X}\\{VAB}\end{bmatrix}=\begin{bmatrix}{A}&{K}\\{l´}&{0}\end{bmatrix}\begin{bmatrix}{X}\\{VAB}\end{bmatrix}+\begin{bmatrix}{Y-C}\\{RE}\end{bmatrix}$$
+
+siendo $RE$ las rentas recibidas por el exterior.
+
+La matriz inversa de Leontief $B^*$ es igual a:
+
+$$B^*=\begin{bmatrix}{A}&{K}\\{l´}&{0}\end{bmatrix}^{-1}$$
+
+El aumento de la demanda final del sector j  tiene como efecto directo inmediato el aumento de la producción sectorial para satisfacerla. Es decir:
+
+$\Delta X_j=\Delta D_j$
+
+
+El segundo de los efectos (efecto indirecto) se deduce de los coeficientes técnicos de producción los cuales nos miden el consumo de mercancía necesaria del sector i para obtener una unidad del sector j tal que:
+
+$\Delta x_{ij}=a_{ij}\Delta X_j$
+
+
+Dado que el efecto total inicial viene determinado por la resolución del siguiente modelo matricial:
+
+$$\Delta X=(1-A)^{-1}\Delta D$$
+
+podemos obtener el efecto inducido como la diferencia entre el efecto total inicial y los efectos directo e indirecto.
+
+
+
+Por ultimo, los multiplicadores totales extendidos a los efectos inducidos por el aumento de la renta, que se obtienen a partir de:
+
+$\Delta X= B^* \Delta D$
+
+De manera que la diferencia entre el efecto total extendido y el efecto total inicial, daría como resultado los efectos renta:
+
+
+$$Efecto Total = Efecto Directo + Efecto Indirecto + Efecto Inducido + Efecto Renta$$
+
+
+{\bf Bibliografía }
+
+Beutel, J. (2008) " An Input-Output System of Economic Accounts for the EU Member States“. InterimReport for Service Contract Number 150830-2007 FISC-D to European Commission. Directorate-General Joint Research Centre. Institute for Prospective Technological Studies.
+
+EUROSTAT (2008) “European Manual of Supply, Use and Input-Output Tables”. Methodologies and Working Papers. Office for Official Publications of the European Communities, pp. 451-475.
+
+Flegg, A. T. y Webber, C. D. (1996): “Using Location Quotients to Estimate Regional Input-Output Coefficients and Multipliers”, Local Economic Quaterly, Vol. 4, p. 58-86.
+
+Flegg A. T. y Webber C. D. (2000): “Regional Size, Regional Specialization and the FLQ Formula”, University of the West of England, Bristol.
+
+Morrison, W. I. y Smith, P. (1974): “Non-Survey Input-Output Techniques at the Small Area Level: An Evaluation”, Journal of Regional Science, Vol. 14, nº 1, p. 1-14.
+
+Parra, F. (2018), Técnicas de Análisis Input-Output con R,
+
+(https://wordpress.com/view/modelosinputoutput.wordpress.com)
+
+Pereira, X.; Carrascal, A.; Fernández, M.(2012): Generación de tablas input-output regionales: cocientes de localización a través de una doble parametrización.
+XXXVIII Reunión de Estudios Regionales
+
+(http://old.aecr.org/web/congresos/2012/Bilbao2012/htdocs/pdf/p419.pdf)
+
+
+Round, J. I. (1978): “An Inter-regional Input-Output Approach to the Evaluation of Non-survey Methods”, Journal of Regional Science, Vol. 18, nº 2, pp 179-194.
+
+Schaffer, A. y Chu, A. (1969): “Non-survey Techniques for Constructing Regional Interindustry Models”, Papers of the Regional Science Association, Vol. 23, pp 83-101.
+
+Valderas, J.M. (2015), “Actualización de marcos Input-Output a través de métodos de proyección. Estudio, aplicación y evaluación empíricaen tablas de origen y destino a precios básicosde varios países de la Unión Europea”.
+
+\end{document}
