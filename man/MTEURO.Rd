@@ -1,7 +1,7 @@
 
 \name{MTEURO}
   \alias{MTEURO}
-  \title{Efectos sobre el VAB y Empleo con matriz oralada}
+  \title{Proyección de una Tabla Input-Output por el método Euro}
   \description{La idea básica del método EURO (Beutel, 2002) es aprovechar las predicciones macroeconómicas oficiales que se estiman en el ámbito de las Contabilidades Nacionales o Regionales, y que se publican con periodicidad anual para, a partir de una tabla Input-Output de referencia, derivar una nueva tabla Input-Output proyectada para aquellos años en los que disponemos de dichas predicciones macroeconómicas y que, esta proyección sea a su vez consistente con las citadas predicciones macroeconómicas oficiales.
 
 La versión del método EURO que aparece en Eurostat (2008) tiene como obtetivo la proyección de tablas Input-Output simétricas, y al igual que el RAS es un procedimiento iterativo. Pero a diferencia de aquel en el que sólo se actualiza la matriz de coeficientes técnicos, en el método EURO intervienen todos los elementos de la tabla simétrica:
