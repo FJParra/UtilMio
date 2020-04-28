@@ -20,23 +20,23 @@ EFMIO = function(TO,TDu,TDy,w,vab,Empleo,vector){
 
   ## Matriz orlada, e inversa de leontief de la matriz orlada.
 
-  VC=as.matrix(TDy[1:r,1]/sum(TDy[1:r,1]))
+  VC=(TDy[1:r,1]+TDy[(1+r):(r+r),1])/sum(TDy[1:(r+r),1])
   CTO=cbind(CT,VC)
-  CTO=rbind(CTO,matrix(c(w,0),nrow=1))
+  CTO=rbind(CTO,w)
   I=diag(c(rep(1,r+1)))
-  BO=solve(I-CTO)
+  BO=solve(I-as.matrix(CTO))
 
   ## Multiplicadores I
 
 
-  vector_I=as.matrix(c(vector),nrow=p)
-  Mult_I=B%*%vector_I
+ vector_I=as.matrix(as.numeric(t(vector[1:p])))
+ Mult_I=B%*%vector_I
 
 
   ## Multiplicadores II
 
 
-  vector_II=as.matrix(c(vector,0),nrow=p)
+  vector_II=as.matrix(as.numeric(t(c(vector,0))))
   Mult_II=BO%*%vector_II
 
   ## Efectos VAB
