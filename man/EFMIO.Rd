@@ -1,7 +1,7 @@
 
 \name{EFMIO}
   \alias{EFMIO}
-  \title{Efectos sobre el VAB y Empleo con matriz oralada}
+  \title{Efectos sobre el VAB y Empleo con matriz orlada}
   \description{Obtiene las predicciones con el modelo Input-Output con los multiplicadores Miyazawa, K. (1976), a través de la matriz orlada. Dichas predicciones nos permiten valorar los impactos o efectos sectoriales que tiene un aumento de la Demanda Final de un complejo industrial en el conjunto de la economía.
 
 Dichos efectos o impactos macroeconómicos se pueden dividir en tres tipos:
@@ -18,7 +18,7 @@ Finalmente, los efectos señalados anteriormente producen a su vez un incremento
   \item{TO}{Matriz Tabla de Origen.}
   \item{TDu}{Matriz Tabla de destino.En la ultima columna el total de consumos intermedios}
   \item{TDy}{Matriz Tabla de demanda final.}
-  \item{w}{Vector fila con los coeficiente de los salarios sobre el VAB.}
+  \item{w}{Vector fila con los coeficiente de los salarios sobre el VAB, se añade un cero en el ultimo campo}
   \item{vab}{Vector fila con los valores añadidos.}
   \item{Empleo}{Vector fila con los trabajadores ocupados en cada rama.}
   \item{vector}{Vector Nueva demanda final.}
@@ -41,10 +41,10 @@ TDu =t(TDu)
 TDy =matrix (TDy, nrow=2)
 TDy=t(TDy)
 vab=c(50,142,130)
-w=c(0.50,0.40,0.60)
+w=c(0.50,0.40,0.60,0)
 empleo=c(10,15,20)
 vector=c(1,0,0)
 impacto= EFMIO(TO,TDu,TDy,w,vab,empleo,vector)
 print(impacto)
-  }
+}
 
