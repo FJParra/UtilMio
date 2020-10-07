@@ -1,4 +1,4 @@
-# utilmio
+# UtilMio
 
 La libreria contiene diversas funciones para regionalizar, modelizar y actualizar marcos imput-output.
 Para la regionalización de una TIO a partir de otra de ambito superior emplean utilizando una mínima información 
@@ -19,12 +19,12 @@ Finalmente, se incluye una modelización de impactos que utiliza los multiplicad
 
 ## Instalación
 
-El paquete `Utilmio` se puede instalar desde GitHub con:
+El paquete `UtilMio` se puede instalar desde GitHub con:
 
 ``` r
 if (!"devtools" %in% installed.packages())
-  install.packages("Utilmio")
-devtools::install_github("PacoParra/Utilmio", build_opts = c("--no-resave-data", "--no-manual"))
+  install.packages("UtilMio")
+devtools::install_github("PacoParra/UtilMio", build_opts = c("--no-resave-data", "--no-manual"))
 ```
 
 **IMPORTANTE**: si trabajas desde un ordenador conectado a la red a
