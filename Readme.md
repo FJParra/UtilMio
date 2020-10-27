@@ -17,36 +17,6 @@ homogéneamente para los distintos estados que forman parte de la Unión Europea
 Finalmente, se incluye una modelización de impactos que utiliza los multiplicadores I y II del modelo de Leontief.
 
 
-## Instalación
-
-El paquete `UtilMio` se puede instalar desde GitHub con:
-
-``` r
-if (!"devtools" %in% installed.packages())
-  install.packages("UtilMio")
-devtools::install_github("PacoParra/UtilMio", build_opts = c("--no-resave-data", "--no-manual"))
-```
-
-**IMPORTANTE**: si trabajas desde un ordenador conectado a la red a
-través de un *proxy*, es muy importante que te asegures de que tu
-conexión esté bien configurada. Para ello debes ejecutar esta serie de
-comandos (sustituyendo el texto por los valores apropiados de tu centro:
-pregunta al servicio de informática):
-
-``` r
-if (!"httr" %in% installed.packages())
-  install.packages("httr")
-httr::set_config(
-  httr::use_proxy(
-    url      = "xxx.xxx.xxx.xx",
-    port     = 0000,
-    username = "usuario",
-    password = "clave"
-  )
-)
-```
-
-
 
 ## Participación: dudas y consultas
 
