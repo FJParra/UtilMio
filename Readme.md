@@ -24,10 +24,6 @@ Para cualquier comentario, duda o consulta que se desee realizar, se
 puede abrir un [*Issue*](https://github.com/PacoParra/Utilmio/issues) en
 este repositorio de GitHub.
 
-Si deseases aportar algo al proyecto, puedes modificar el código a tu
-antojo y abrir un [*Pull
-Request*](https://github.com/fisabio/medear/pulls) en el repositorio.
-
 Por último, y si quieres contactar directamente en caso de tener
 problemas para instalar el paquete o acerca de su uso, puedes dirigirte
 a Francisco Parra en la dirección de correo <parra_fj@cantabria.es>: él te
