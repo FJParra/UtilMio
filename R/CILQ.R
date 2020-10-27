@@ -6,6 +6,6 @@ n=length(a)
 # Calculamos SLQ
 SLQ=(a/sum(a))/(b/sum(b))
 # Calculamos CILQ
-CILQ=t(matrix(SLQ,ncol=n,nrow=n)%*%diag(1/SLQ))
+CILQ=matrix(SLQ,ncol=n,nrow=n)%*%diag(1/SLQ)
 as.matrix(CILQ)}
 
