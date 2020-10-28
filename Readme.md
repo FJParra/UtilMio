@@ -16,7 +16,13 @@ para elaborar el marco input-output (tabla simétrica y tablas supply-use)
 homogéneamente para los distintos estados que forman parte de la Unión Europea (Eurostat, 2008).
 Finalmente, se incluye una modelización de impactos que utiliza los multiplicadores I y II del modelo de Leontief.
 
+## Instalación
 
+El paquete medear se puede instalar desde GitHub con:
+
+if (!"devtools" %in% installed.packages())
+  install.packages("devtools")
+devtools::install_github("PacoParra/UtilMio")
 
 ## Participación: dudas y consultas
 
