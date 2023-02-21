@@ -18,7 +18,7 @@ Finalmente, los efectos señalados anteriormente producen a su vez un incremento
   \item{TO}{Matriz Tabla de Origen.}
   \item{TDu}{Matriz Tabla de destino.En la ultima columna el total de consumos intermedios}
   \item{TDy}{Matriz Tabla de demanda final.}
-  \item{w}{Vector fila con los coeficiente de los salarios sobre el VAB, se añade un cero en el ultimo campo}
+  \item{w}{Vector fila con los coeficiente de los salarios sobre el output total, se añade un cero en el ultimo campo}
   \item{vab}{Vector fila con los valores añadidos.}
   \item{Empleo}{Vector fila con los trabajadores ocupados en cada rama.}
   \item{vector}{Vector Nueva demanda final.}
