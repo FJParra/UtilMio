@@ -18,7 +18,7 @@ Finalmente, se incluye una modelización de impactos que utiliza los multiplicad
 
 ## Instalación
 
-El paquete medear se puede instalar desde GitHub con:
+El paquete UtilMio se puede instalar desde GitHub con:
 
 if (!"devtools" %in% installed.packages())
   install.packages("devtools")
@@ -32,5 +32,5 @@ este repositorio de GitHub.
 
 Por último, y si quieres contactar directamente en caso de tener
 problemas para instalar el paquete o acerca de su uso, puedes dirigirte
-a Francisco Parra en la dirección de correo <parra_fj@cantabria.es>: él te
+a Francisco Parra en la dirección de correo <fparra@cee.uned.es>: él te
 orientará acerca de los pasos a seguir.
