@@ -22,12 +22,12 @@ El paquete UtilMio se puede instalar desde GitHub con:
 
 if (!"devtools" %in% installed.packages())
   install.packages("devtools")
-devtools::install_github("PacoParra/UtilMio")
+devtools::install_github("FJParra/UtilMio")
 
 ## Participación: dudas y consultas
 
 Para cualquier comentario, duda o consulta que se desee realizar, se
-puede abrir un [*Issue*](https://github.com/PacoParra/Utilmio/issues) en
+puede abrir un [*Issue*](https://github.com/FJParra/Utilmio/issues) en
 este repositorio de GitHub.
 
 Por último, y si quieres contactar directamente en caso de tener
